@@ -1,0 +1,160 @@
+import java.util.Scanner;
+
+class GatePass {
+    int id;
+    String reason;
+    String branch;
+    String status;   // Pending / Accepted / Rejected
+}
+
+public class GatePassSystem {
+
+    static final int MAX = 5;
+    static GatePass[] queue = new GatePass[MAX];
+    static int front = -1, rear = -1;
+
+    static Scanner sc = new Scanner(System.in);
+
+    /* Student submits gate pass request */
+    static void studentRequest() {
+        if (rear == MAX - 1) {
+            System.out.println("\nQueue is FULL. Cannot submit request.");
+            return;
+        }
+
+        if (front == -1)
+            front = 0;
+
+        rear++;
+        queue[rear] = new GatePass();
+
+        System.out.print("\nEnter Student ID: ");
+        queue[rear].id = sc.nextInt();
+        sc.nextLine(); // clear buffer
+
+        System.out.print("Enter Reason: ");
+        queue[rear].reason = sc.nextLine();
+
+        System.out.print("Enter Branch: ");
+        queue[rear].branch = sc.next();
+
+        queue[rear].status = "Pending";
+
+        System.out.println("\nGate Pass Request Submitted Successfully.");
+    }
+
+    /* Student checks gate pass status */
+    static void checkStatus() {
+        int sid;
+        boolean found = false;
+
+        System.out.print("\nEnter Student ID to check status: ");
+        sid = sc.nextInt();
+
+        for (int i = 0; i <= rear; i++) {
+            if (queue[i].id == sid) {
+                System.out.println("\nStudent ID: " + queue[i].id);
+                System.out.println("Branch: " + queue[i].branch);
+                System.out.println("Reason: " + queue[i].reason);
+                System.out.println("Status: " + queue[i].status);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+            System.out.println("\nNo gate pass request found.");
+    }
+
+    /* Teacher processes gate pass */
+    static void teacherProcess() {
+        if (front == -1 || front > rear) {
+            System.out.println("\nNo pending gate pass requests.");
+            return;
+        }
+
+        System.out.println("\n--- Pending Gate Pass Request ---");
+        System.out.println("Student ID: " + queue[front].id);
+        System.out.println("Reason: " + queue[front].reason);
+        System.out.println("Branch: " + queue[front].branch);
+
+        System.out.println("\n1. Accept Gate Pass");
+        System.out.println("2. Reject Gate Pass");
+        System.out.print("Enter choice: ");
+        int choice = sc.nextInt();
+
+        if (choice == 1) {
+            queue[front].status = "Accepted";
+            System.out.println("\nGate Pass ACCEPTED.");
+        } else if (choice == 2) {
+            queue[front].status = "Rejected";
+            System.out.println("\nGate Pass REJECTED.");
+        } else {
+            System.out.println("\nInvalid choice.");
+            return;
+        }
+
+        front++;
+    }
+
+    /* Main Method */
+    public static void main(String[] args) {
+
+        int mainChoice, subChoice;
+
+        do {
+            System.out.println("\n====== MAIN MENU ======");
+            System.out.println("1. Login as Student");
+            System.out.println("2. Login as Teacher");
+            System.out.println("3. Exit");
+            System.out.print("Enter choice: ");
+            mainChoice = sc.nextInt();
+
+            switch (mainChoice) {
+
+                case 1:
+                    do {
+                        System.out.println("\n--- Student Menu ---");
+                        System.out.println("1. Submit Gate Pass Request");
+                        System.out.println("2. Check Gate Pass Status");
+                        System.out.println("3. Back to Main Menu");
+                        System.out.print("Enter choice: ");
+                        subChoice = sc.nextInt();
+
+                        if (subChoice == 1)
+                            studentRequest();
+                        else if (subChoice == 2)
+                            checkStatus();
+                        else if (subChoice != 3)
+                            System.out.println("\nInvalid option!");
+
+                    } while (subChoice != 3);
+                    break;
+
+                case 2:
+                    do {
+                        System.out.println("\n--- Teacher Menu ---");
+                        System.out.println("1. Process Gate Pass");
+                        System.out.println("2. Back to Main Menu");
+                        System.out.print("Enter choice: ");
+                        subChoice = sc.nextInt();
+
+                        if (subChoice == 1)
+                            teacherProcess();
+                        else if (subChoice != 2)
+                            System.out.println("\nInvalid option!");
+
+                    } while (subChoice != 2);
+                    break;
+
+                case 3:
+                    System.out.println("\nExiting Gate Pass System...");
+                    break;
+
+                default:
+                    System.out.println("\nInvalid choice!");
+            }
+
+        } while (mainChoice != 3);
+    }
+}
